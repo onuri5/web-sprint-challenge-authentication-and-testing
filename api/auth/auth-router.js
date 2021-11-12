@@ -1,36 +1,33 @@
-const router = require('express').Router();
+const router = require("express").Router();
+const bcrypt = require("bcryptjs");
+const { BCRYPT_ROUNDS } = require("./secrets");
+// const tokenBuilder = require("./token-builder");
+const {
+  validateBody,
+  checkUserFree,
+} = require("../middleware/auth-middleware");
+const Users = require("../Users/users-model");
 
-router.post('/register', (req, res) => {
-  res.end('implement register, please!');
-  /*
-    IMPLEMENT
-    You are welcome to build additional middlewares to help with the endpoint's functionality.
-    DO NOT EXCEED 2^8 ROUNDS OF HASHING!
+router.post("/register", validateBody, checkUserFree, (req, res) => {
+  let user = req.body;
 
-    1- In order to register a new account the client must provide `username` and `password`:
-      {
-        "username": "Captain Marvel", // must not exist already in the `users` table
-        "password": "foobar"          // needs to be hashed before it's saved
-      }
+  const rounds = BCRYPT_ROUNDS;
+  const hash = bcrypt.hashSync(user.password, rounds);
 
-    2- On SUCCESSFUL registration,
-      the response body should have `id`, `username` and `password`:
-      {
-        "id": 1,
-        "username": "Captain Marvel",
-        "password": "2a$08$jG.wIGR2S4hxuyWNcBf9MuoC4y0dNy7qC/LbmtuFBSdIhWks2LhpG"
-      }
+  user.password = hash;
 
-    3- On FAILED registration due to `username` or `password` missing from the request body,
-      the response body should include a string exactly as follows: "username and password required".
-
-    4- On FAILED registration due to the `username` being taken,
-      the response body should include a string exactly as follows: "username taken".
-  */
+  Users.add(user)
+    .then((newUser) => {
+      res.status(200).json(newUser);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ message: err });
+    });
 });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post("/login", (req, res) => {
+  res.end("implement login, please!");
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
