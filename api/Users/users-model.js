@@ -5,7 +5,7 @@ function getUsers() {
 }
 
 function getBy(filter) {
-  return db("users").select("users.username").where(filter);
+  return db("users").where(filter);
 }
 
 async function add(user) {
