@@ -40,5 +40,5 @@ const checkUserExists = async (req, res, next) => {
 module.exports = {
   validateBody,
   checkUserFree,
-  checkUserExists
+  checkUserExists,
 };
